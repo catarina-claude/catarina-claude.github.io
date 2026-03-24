@@ -68,7 +68,7 @@
         <div class="stats-bar animate-on-scroll">
           <div class="stats-bar__item">
             <span class="stats-bar__value">~80 MB</span>
-            <span class="stats-bar__label">RAM Usage</span>
+            <span class="stats-bar__label">RAM Idle</span>
           </div>
           <div class="stats-bar__item">
             <span class="stats-bar__value">3</span>
@@ -348,7 +348,7 @@
           <div class="feature-row__text">
             <span class="feature-tag feature-tag--rust">Rust</span>
             <h3 class="feature-row__title">Built with Rust. Runs on Your Machine.</h3>
-            <p class="feature-row__desc">Most developers run 8+ separate apps to get through the day &mdash; burning through gigabytes of RAM. Catarina Claude replaces them all in a single Rust-powered app. Your machine stays fast, your data stays yours.</p>
+            <p class="feature-row__desc">Right now, your machine is running Postman, a Git client, a terminal, a notes app, a timer, a calendar, Claude&hellip; each one silently eating your RAM. Together, they consume over 2 GB &mdash; just sitting there. Catarina Claude replaces all of them. One app. ~80 MB idle. Under full load, still under 500 MB. That is not a typo.</p>
             <ul class="feature-list">
               <li>Written in Rust &mdash; native speed, minimal memory footprint</li>
               <li>Everything runs locally &mdash; your code, conversations, and data never leave your machine</li>
@@ -361,8 +361,8 @@
           <div class="feature-row__visual">
             <div class="ram-comparison">
               <div class="ram-comparison__header">
-                <span class="ram-comparison__title">RAM Usage Comparison</span>
-                <span class="ram-comparison__subtitle">Typical idle memory consumption</span>
+                <span class="ram-comparison__title">Where is your RAM going?</span>
+                <span class="ram-comparison__subtitle">Typical memory consumption &mdash; idle, just sitting there</span>
               </div>
               <div class="ram-comparison__bars">
                 <div class="ram-bar ram-bar--other" data-app="Postman" data-ram="450">
@@ -407,20 +407,25 @@
                 </div>
               </div>
               <div class="ram-comparison__total">
-                <span class="ram-comparison__total-label">Total: 8 apps</span>
-                <span class="ram-comparison__total-value ram-comparison__total-value--bad">~2.25 GB</span>
+                <span class="ram-comparison__total-label">Total: 8 apps doing nothing</span>
+                <span class="ram-comparison__total-value ram-comparison__total-value--bad">~2.25 GB wasted</span>
               </div>
               <div class="ram-comparison__divider">
-                <span>vs</span>
+                <span>or just use</span>
               </div>
               <div class="ram-bar ram-bar--catarina">
                 <div class="ram-bar__label">Catarina Claude</div>
                 <div class="ram-bar__track"><div class="ram-bar__fill ram-bar__fill--accent" style="--bar-width: 16%"></div></div>
-                <div class="ram-bar__value ram-bar__value--accent">~80 MB</div>
+                <div class="ram-bar__value ram-bar__value--accent">~80 MB idle</div>
+              </div>
+              <div class="ram-bar ram-bar--catarina">
+                <div class="ram-bar__label" style="opacity: 0.6">Under full load</div>
+                <div class="ram-bar__track"><div class="ram-bar__fill ram-bar__fill--accent" style="--bar-width: 100%"></div></div>
+                <div class="ram-bar__value ram-bar__value--accent">~500 MB max</div>
               </div>
               <div class="ram-comparison__total">
-                <span class="ram-comparison__total-label">All 8 tools in 1 app</span>
-                <span class="ram-comparison__total-value ram-comparison__total-value--good">28x less RAM</span>
+                <span class="ram-comparison__total-label">All 8 tools. One app. Even under full load.</span>
+                <span class="ram-comparison__total-value ram-comparison__total-value--good">4.5x less RAM</span>
               </div>
             </div>
           </div>
