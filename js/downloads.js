@@ -1,5 +1,5 @@
 /**
- * Catarina AI - Downloads Page Logic
+ * Catarina Claude - Downloads Page Logic
  * Handles: GitHub Releases API fetch, OS detection, dynamic download links
  */
 

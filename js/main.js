@@ -1,5 +1,5 @@
 /**
- * Catarina AI - Main JavaScript
+ * Catarina Claude - Main JavaScript
  * Handles: theme toggle, navigation, scroll animations, navbar behavior
  */
 
@@ -51,28 +51,8 @@ function initMobileMenu() {
   });
 }
 
-// ---------- Scroll Animations (Intersection Observer) ----------
-function initScrollAnimations() {
-  const elements = document.querySelectorAll('.animate-on-scroll');
-  if (!elements.length) return;
-
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add('visible');
-          observer.unobserve(entry.target);
-        }
-      });
-    },
-    {
-      threshold: 0.1,
-      rootMargin: '0px 0px -40px 0px',
-    }
-  );
-
-  elements.forEach((el) => observer.observe(el));
-}
+// ---------- Scroll Animations ----------
+// Handled by animations.js (staggered, GPU-accelerated)
 
 // ---------- Navbar Scroll Effect ----------
 function initNavbarScroll() {
@@ -123,7 +103,6 @@ function initSmoothScroll() {
 document.addEventListener('DOMContentLoaded', () => {
   initThemeToggle();
   initMobileMenu();
-  initScrollAnimations();
   initNavbarScroll();
   initSmoothScroll();
 });
