@@ -625,3 +625,47 @@ jobs:
           git diff --cached --quiet && echo "No cask changes" && exit 0
           git commit -m "chore: bump catarina-claude to v${VERSION}"
           git push
+
+  # ─────────────────────────────────────────────────────────────
+  # Auto-debug: dispatch full-log builds on the private repo
+  # when any platform fails. Runs only on failure.
+  # ─────────────────────────────────────────────────────────────
+  debug-on-failure:
+    needs: [validate, build-macos, build-linux, build-windows]
+    if: failure()
+    runs-on: ubuntu-latest
+    environment: build-gate
+    strategy:
+      matrix:
+        include:
+          - job: build-macos
+            targets: '["aarch64-apple-darwin","x86_64-apple-darwin"]'
+          - job: build-linux
+            targets: '["linux"]'
+          - job: build-windows
+            targets: '["windows"]'
+    steps:
+      - name: Dispatch debug builds to private repo
+        env:
+          GH_TOKEN: ${{ secrets.CATARINA_RELEASE_TOKEN }}
+        run: |
+          echo "::add-mask::${GH_TOKEN}"
+          SHA="${{ needs.validate.outputs.sha }}"
+
+          for TARGET in $(echo '${{ matrix.targets }}' | jq -r '.[]'); do
+            echo "🔍 Dispatching debug build for ${TARGET} @ ${SHA:0:8}"
+            curl -s -o /dev/null -w "HTTP %{http_code}\n" \
+              -X POST \
+              -H "Accept: application/vnd.github+json" \
+              -H "Authorization: Bearer ${GH_TOKEN}" \
+              "https://api.github.com/repos/jeancatarina/catarina-claude/dispatches" \
+              -d "{
+                \"event_type\": \"debug-build\",
+                \"client_payload\": {
+                  \"target\": \"${TARGET}\",
+                  \"sha\": \"${SHA}\"
+                }
+              }"
+          done
+          echo ""
+          echo "📋 Check debug logs at: https://github.com/jeancatarina/catarina-claude/actions/workflows/debug-build.yml"
