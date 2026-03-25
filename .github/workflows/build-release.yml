@@ -146,29 +146,46 @@ jobs:
 
       - name: Install frontend dependencies
         working-directory: source
-        run: npm ci
+        run: npm ci 2>&1 | tail -5
 
       - name: Build ARM64 (Apple Silicon)
-        uses: tauri-apps/tauri-action@v0
+        working-directory: source
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
-        with:
-          projectPath: source
-          args: --target aarch64-apple-darwin
-          includeUpdaterJson: true
+        run: |
+          # Build with suppressed output to prevent code leaks in public logs
+          echo "🔨 Building aarch64-apple-darwin..."
+          if npx tauri build --target aarch64-apple-darwin > /tmp/build-arm64.log 2>&1; then
+            echo "✅ ARM64 build succeeded ($(wc -l < /tmp/build-arm64.log) log lines suppressed)"
+          else
+            EXIT_CODE=$?
+            echo "::error::ARM64 build failed with exit code $EXIT_CODE"
+            echo "--- Last 5 lines (sanitized) ---"
+            tail -5 /tmp/build-arm64.log | sed 's|source/||g; s|src-tauri/src/[^ ]*|[REDACTED_PATH]|g'
+            rm -f /tmp/build-arm64.log
+            exit $EXIT_CODE
+          fi
+          rm -f /tmp/build-arm64.log
 
       - name: Build x86_64 (Intel)
-        uses: tauri-apps/tauri-action@v0
+        working-directory: source
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
-        with:
-          projectPath: source
-          args: --target x86_64-apple-darwin
-          includeUpdaterJson: true
+        run: |
+          echo "🔨 Building x86_64-apple-darwin..."
+          if npx tauri build --target x86_64-apple-darwin > /tmp/build-x64.log 2>&1; then
+            echo "✅ x86_64 build succeeded ($(wc -l < /tmp/build-x64.log) log lines suppressed)"
+          else
+            EXIT_CODE=$?
+            echo "::error::x86_64 build failed with exit code $EXIT_CODE"
+            echo "--- Last 5 lines (sanitized) ---"
+            tail -5 /tmp/build-x64.log | sed 's|source/||g; s|src-tauri/src/[^ ]*|[REDACTED_PATH]|g'
+            rm -f /tmp/build-x64.log
+            exit $EXIT_CODE
+          fi
+          rm -f /tmp/build-x64.log
 
       - name: Collect artifacts
         shell: bash
@@ -186,11 +203,12 @@ jobs:
           find "$BUNDLE_X64/macos" -name "*.app.tar.gz" -exec cp {} "artifacts/catarina-claude-${VERSION}-macos-x64.app.tar.gz" \; 2>/dev/null || true
           find "$BUNDLE_X64/macos" -name "*.app.tar.gz.sig" -exec cp {} "artifacts/catarina-claude-${VERSION}-macos-x64.app.tar.gz.sig" \; 2>/dev/null || true
 
+          echo "📦 Artifacts collected:"
           ls -la artifacts/
 
       - name: Delete source code before upload
         if: always()
-        run: rm -rf source
+        run: rm -rf source /tmp/build-*.log
 
       - name: Upload macOS artifacts
         uses: actions/upload-artifact@v4
@@ -258,17 +276,26 @@ jobs:
 
       - name: Install frontend dependencies
         working-directory: source
-        run: npm ci
+        run: npm ci 2>&1 | tail -5
 
       - name: Build Tauri app
-        uses: tauri-apps/tauri-action@v0
+        working-directory: source
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
-        with:
-          projectPath: source
-          includeUpdaterJson: true
+        run: |
+          echo "🔨 Building linux x86_64..."
+          if npx tauri build > /tmp/build-linux.log 2>&1; then
+            echo "✅ Linux build succeeded ($(wc -l < /tmp/build-linux.log) log lines suppressed)"
+          else
+            EXIT_CODE=$?
+            echo "::error::Linux build failed with exit code $EXIT_CODE"
+            echo "--- Last 5 lines (sanitized) ---"
+            tail -5 /tmp/build-linux.log | sed 's|source/||g; s|src-tauri/src/[^ ]*|[REDACTED_PATH]|g'
+            rm -f /tmp/build-linux.log
+            exit $EXIT_CODE
+          fi
+          rm -f /tmp/build-linux.log
 
       - name: Collect artifacts
         shell: bash
@@ -282,11 +309,12 @@ jobs:
           find "$BUNDLE_DIR/appimage" -name "*.AppImage.tar.gz" -exec cp {} "artifacts/catarina-claude-${VERSION}-linux-x64.AppImage.tar.gz" \; 2>/dev/null || true
           find "$BUNDLE_DIR/appimage" -name "*.AppImage.tar.gz.sig" -exec cp {} "artifacts/catarina-claude-${VERSION}-linux-x64.AppImage.tar.gz.sig" \; 2>/dev/null || true
 
+          echo "📦 Artifacts collected:"
           ls -la artifacts/
 
       - name: Delete source code before upload
         if: always()
-        run: rm -rf source
+        run: rm -rf source /tmp/build-linux.log
 
       - name: Upload Linux artifacts
         uses: actions/upload-artifact@v4
@@ -350,17 +378,28 @@ jobs:
 
       - name: Install frontend dependencies
         working-directory: source
-        run: npm ci
+        shell: bash
+        run: npm ci 2>&1 | tail -5
 
       - name: Build Tauri app
-        uses: tauri-apps/tauri-action@v0
+        working-directory: source
+        shell: bash
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
-        with:
-          projectPath: source
-          includeUpdaterJson: true
+        run: |
+          echo "🔨 Building windows x86_64..."
+          if npx tauri build > /tmp/build-windows.log 2>&1; then
+            echo "✅ Windows build succeeded ($(wc -l < /tmp/build-windows.log) log lines suppressed)"
+          else
+            EXIT_CODE=$?
+            echo "::error::Windows build failed with exit code $EXIT_CODE"
+            echo "--- Last 5 lines (sanitized) ---"
+            tail -5 /tmp/build-windows.log | sed 's|source/||g; s|src-tauri/src/[^ ]*|[REDACTED_PATH]|g'
+            rm -f /tmp/build-windows.log
+            exit $EXIT_CODE
+          fi
+          rm -f /tmp/build-windows.log
 
       - name: Collect artifacts
         shell: bash
@@ -376,12 +415,13 @@ jobs:
           find "$BUNDLE_DIR/nsis" -name "*.nsis.zip" -exec cp {} "artifacts/catarina-claude-${VERSION}-windows-x64.nsis.zip" \; 2>/dev/null || true
           find "$BUNDLE_DIR/nsis" -name "*.nsis.zip.sig" -exec cp {} "artifacts/catarina-claude-${VERSION}-windows-x64.nsis.zip.sig" \; 2>/dev/null || true
 
+          echo "📦 Artifacts collected:"
           ls -la artifacts/
 
       - name: Delete source code before upload
         if: always()
         shell: bash
-        run: rm -rf source
+        run: rm -rf source /tmp/build-windows.log
 
       - name: Upload Windows artifacts
         uses: actions/upload-artifact@v4
