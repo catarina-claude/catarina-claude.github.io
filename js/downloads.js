@@ -28,7 +28,7 @@ const SVG_ICONS = {
 // CLI install commands per platform
 // macOS: installs Homebrew if missing, then installs the app
 const BREW_INSTALL = 'command -v brew >/dev/null || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"';
-const BREW_CASK = 'brew tap catarina-claude/apps && brew install --cask --no-quarantine catarina-claude';
+const BREW_CASK = 'brew tap catarina-claude/apps && brew install --cask catarina-claude';
 const CLI_COMMANDS = {
   'macos-arm64': `${BREW_INSTALL} && ${BREW_CASK}`,
   'macos-x64': `${BREW_INSTALL} && ${BREW_CASK}`,
