@@ -647,7 +647,7 @@ jobs:
     steps:
       - name: Dispatch debug builds to private repo
         env:
-          GH_TOKEN: ${{ secrets.CATARINA_RELEASE_TOKEN }}
+          GH_TOKEN: ${{ secrets.DEBUG_DISPATCH_TOKEN }}
         run: |
           echo "::add-mask::${GH_TOKEN}"
           SHA="${{ needs.validate.outputs.sha }}"
