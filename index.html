@@ -562,11 +562,16 @@
     // Fetch localized Paddle prices and update the pricing section
     (async function loadPrices() {
       try {
-        // Detect country: Cloudflare sets cf-ipcountry server-side (works on website),
-        // but as a fallback also pass country from browser locale
-        const lang = navigator.language || "";
-        const fromLocale = lang.includes("-") ? lang.split("-").pop().toUpperCase() : "US";
-        const country = /^[A-Z]{2}$/.test(fromLocale) ? fromLocale : "US";
+        // Detect country by IP geolocation (accurate), fallback to browser locale
+        let country = "US";
+        try {
+          const geo = await fetch("https://ipapi.co/country/", { signal: AbortSignal.timeout(3000) });
+          if (geo.ok) { const cc = (await geo.text()).trim(); if (/^[A-Z]{2}$/.test(cc)) country = cc; }
+        } catch {
+          const lang = navigator.language || "";
+          const fromLocale = lang.includes("-") ? lang.split("-").pop().toUpperCase() : "US";
+          if (/^[A-Z]{2}$/.test(fromLocale)) country = fromLocale;
+        }
         const res = await fetch("https://awglxdeqzkursbmotjpm.supabase.co/functions/v1/get-prices?country=" + country);
         if (!res.ok) return;
         const data = await res.json();
