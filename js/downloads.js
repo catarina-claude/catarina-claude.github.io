@@ -32,14 +32,14 @@ const SVG_ICONS = {
 // CLI install commands per platform
 // macOS: installs Homebrew if missing, then installs the app
 const BREW_INSTALL = 'command -v brew >/dev/null || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"';
-const BREW_CASK = 'brew tap catarina-claude/apps && brew install --cask catarina-claude';
+const BREW_CASK = 'brew tap cadente-hub/apps && brew install --cask cadente';
 const CLI_COMMANDS = {
   'macos-arm64': `${BREW_INSTALL} && ${BREW_CASK}`,
   'macos-x64': `${BREW_INSTALL} && ${BREW_CASK}`,
-  'linux-appimage': 'curl -fsSL https://github.com/cadente-hub/cadente-hub.github.io/releases/latest/download/catarina-claude-linux-x64.AppImage -o catarina-claude.AppImage && chmod +x catarina-claude.AppImage',
-  'linux-deb': 'curl -fsSL https://github.com/cadente-hub/cadente-hub.github.io/releases/latest/download/catarina-claude-linux-x64.deb -o catarina-claude.deb && sudo dpkg -i catarina-claude.deb',
-  'windows-exe': 'winget install catarina-claude',
-  'windows-msi': 'winget install catarina-claude --installer-type msi',
+  'linux-appimage': 'curl -fsSL https://github.com/cadente-hub/cadente-hub.github.io/releases/latest/download/cadente-linux-x64.AppImage -o cadente.AppImage && chmod +x cadente.AppImage',
+  'linux-deb': 'curl -fsSL https://github.com/cadente-hub/cadente-hub.github.io/releases/latest/download/cadente-linux-x64.deb -o cadente.deb && sudo dpkg -i cadente.deb',
+  'windows-exe': 'winget install cadente',
+  'windows-msi': 'winget install cadente --installer-type msi',
 };
 
 // Platform display info

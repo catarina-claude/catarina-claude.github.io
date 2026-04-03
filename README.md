@@ -1,4 +1,4 @@
-# Catarina AI
+# Cadente
 
 [![Latest Release](https://img.shields.io/github/v/release/cadente-hub/cadente-hub.github.io?style=flat-square&color=6366f1)](https://github.com/cadente-hub/cadente-hub.github.io/releases/latest)
 [![GitHub Pages](https://img.shields.io/github/actions/workflow/status/cadente-hub/cadente-hub.github.io/deploy-site.yml?label=website&style=flat-square)](https://cadente-hub.github.io)
@@ -22,20 +22,20 @@ Your AI-Powered Desktop Assistant — bringing the power of Claude directly to y
 ### macOS
 
 1. Download the `.dmg` file for your architecture (Apple Silicon or Intel)
-2. Open the `.dmg` and drag **Catarina AI** to your Applications folder
+2. Open the `.dmg` and drag **Cadente** to your Applications folder
 3. On first launch, right-click → Open (to bypass Gatekeeper until code signing is set up)
 
 ### Linux
 
 **AppImage:**
 ```bash
-chmod +x catarina-ai-*-linux-x64.AppImage
-./catarina-ai-*-linux-x64.AppImage
+chmod +x cadente-*-linux-x64.AppImage
+./cadente-*-linux-x64.AppImage
 ```
 
 **Debian/Ubuntu:**
 ```bash
-sudo dpkg -i catarina-ai-*-linux-x64.deb
+sudo dpkg -i cadente-*-linux-x64.deb
 ```
 
 ### Windows

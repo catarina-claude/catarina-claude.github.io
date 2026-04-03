@@ -4,7 +4,7 @@
  */
 
 // ---------- Theme Toggle ----------
-const THEME_KEY = 'catarina-theme';
+const THEME_KEY = 'cadente-theme';
 
 function getPreferredTheme() {
   const stored = localStorage.getItem(THEME_KEY);

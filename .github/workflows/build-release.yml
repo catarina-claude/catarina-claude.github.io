@@ -201,14 +201,14 @@ jobs:
           mkdir -p artifacts
 
           BUNDLE_ARM="source/src-tauri/target/aarch64-apple-darwin/release/bundle"
-          find "$BUNDLE_ARM/dmg" -name "*.dmg" -exec cp {} "artifacts/catarina-claude-${VERSION}-macos-arm64.dmg" \; 2>/dev/null || true
-          find "$BUNDLE_ARM/macos" -name "*.app.tar.gz" -exec cp {} "artifacts/catarina-claude-${VERSION}-macos-arm64.app.tar.gz" \; 2>/dev/null || true
-          find "$BUNDLE_ARM/macos" -name "*.app.tar.gz.sig" -exec cp {} "artifacts/catarina-claude-${VERSION}-macos-arm64.app.tar.gz.sig" \; 2>/dev/null || true
+          find "$BUNDLE_ARM/dmg" -name "*.dmg" -exec cp {} "artifacts/cadente-${VERSION}-macos-arm64.dmg" \; 2>/dev/null || true
+          find "$BUNDLE_ARM/macos" -name "*.app.tar.gz" -exec cp {} "artifacts/cadente-${VERSION}-macos-arm64.app.tar.gz" \; 2>/dev/null || true
+          find "$BUNDLE_ARM/macos" -name "*.app.tar.gz.sig" -exec cp {} "artifacts/cadente-${VERSION}-macos-arm64.app.tar.gz.sig" \; 2>/dev/null || true
 
           BUNDLE_X64="source/src-tauri/target/x86_64-apple-darwin/release/bundle"
-          find "$BUNDLE_X64/dmg" -name "*.dmg" -exec cp {} "artifacts/catarina-claude-${VERSION}-macos-x64.dmg" \; 2>/dev/null || true
-          find "$BUNDLE_X64/macos" -name "*.app.tar.gz" -exec cp {} "artifacts/catarina-claude-${VERSION}-macos-x64.app.tar.gz" \; 2>/dev/null || true
-          find "$BUNDLE_X64/macos" -name "*.app.tar.gz.sig" -exec cp {} "artifacts/catarina-claude-${VERSION}-macos-x64.app.tar.gz.sig" \; 2>/dev/null || true
+          find "$BUNDLE_X64/dmg" -name "*.dmg" -exec cp {} "artifacts/cadente-${VERSION}-macos-x64.dmg" \; 2>/dev/null || true
+          find "$BUNDLE_X64/macos" -name "*.app.tar.gz" -exec cp {} "artifacts/cadente-${VERSION}-macos-x64.app.tar.gz" \; 2>/dev/null || true
+          find "$BUNDLE_X64/macos" -name "*.app.tar.gz.sig" -exec cp {} "artifacts/cadente-${VERSION}-macos-x64.app.tar.gz.sig" \; 2>/dev/null || true
 
           echo "📦 Artifacts collected:"
           ls -la artifacts/
@@ -328,10 +328,10 @@ jobs:
           mkdir -p artifacts
           BUNDLE_DIR="source/src-tauri/target/release/bundle"
 
-          find "$BUNDLE_DIR/appimage" -name "*.AppImage" -exec cp {} "artifacts/catarina-claude-${VERSION}-linux-x64.AppImage" \; 2>/dev/null || true
-          find "$BUNDLE_DIR/deb" -name "*.deb" -exec cp {} "artifacts/catarina-claude-${VERSION}-linux-x64.deb" \; 2>/dev/null || true
-          find "$BUNDLE_DIR/appimage" -name "*.AppImage.tar.gz" -exec cp {} "artifacts/catarina-claude-${VERSION}-linux-x64.AppImage.tar.gz" \; 2>/dev/null || true
-          find "$BUNDLE_DIR/appimage" -name "*.AppImage.tar.gz.sig" -exec cp {} "artifacts/catarina-claude-${VERSION}-linux-x64.AppImage.tar.gz.sig" \; 2>/dev/null || true
+          find "$BUNDLE_DIR/appimage" -name "*.AppImage" -exec cp {} "artifacts/cadente-${VERSION}-linux-x64.AppImage" \; 2>/dev/null || true
+          find "$BUNDLE_DIR/deb" -name "*.deb" -exec cp {} "artifacts/cadente-${VERSION}-linux-x64.deb" \; 2>/dev/null || true
+          find "$BUNDLE_DIR/appimage" -name "*.AppImage.tar.gz" -exec cp {} "artifacts/cadente-${VERSION}-linux-x64.AppImage.tar.gz" \; 2>/dev/null || true
+          find "$BUNDLE_DIR/appimage" -name "*.AppImage.tar.gz.sig" -exec cp {} "artifacts/cadente-${VERSION}-linux-x64.AppImage.tar.gz.sig" \; 2>/dev/null || true
 
           echo "📦 Artifacts collected:"
           ls -la artifacts/
@@ -436,12 +436,12 @@ jobs:
           mkdir -p artifacts
           BUNDLE_DIR="source/src-tauri/target/release/bundle"
 
-          find "$BUNDLE_DIR/msi" -name "*.msi" -exec cp {} "artifacts/catarina-claude-${VERSION}-windows-x64.msi" \; 2>/dev/null || true
-          find "$BUNDLE_DIR/nsis" -name "*.exe" -exec cp {} "artifacts/catarina-claude-${VERSION}-windows-x64.exe" \; 2>/dev/null || true
-          find "$BUNDLE_DIR/msi" -name "*.msi.zip" -exec cp {} "artifacts/catarina-claude-${VERSION}-windows-x64.msi.zip" \; 2>/dev/null || true
-          find "$BUNDLE_DIR/msi" -name "*.msi.zip.sig" -exec cp {} "artifacts/catarina-claude-${VERSION}-windows-x64.msi.zip.sig" \; 2>/dev/null || true
-          find "$BUNDLE_DIR/nsis" -name "*.nsis.zip" -exec cp {} "artifacts/catarina-claude-${VERSION}-windows-x64.nsis.zip" \; 2>/dev/null || true
-          find "$BUNDLE_DIR/nsis" -name "*.nsis.zip.sig" -exec cp {} "artifacts/catarina-claude-${VERSION}-windows-x64.nsis.zip.sig" \; 2>/dev/null || true
+          find "$BUNDLE_DIR/msi" -name "*.msi" -exec cp {} "artifacts/cadente-${VERSION}-windows-x64.msi" \; 2>/dev/null || true
+          find "$BUNDLE_DIR/nsis" -name "*.exe" -exec cp {} "artifacts/cadente-${VERSION}-windows-x64.exe" \; 2>/dev/null || true
+          find "$BUNDLE_DIR/msi" -name "*.msi.zip" -exec cp {} "artifacts/cadente-${VERSION}-windows-x64.msi.zip" \; 2>/dev/null || true
+          find "$BUNDLE_DIR/msi" -name "*.msi.zip.sig" -exec cp {} "artifacts/cadente-${VERSION}-windows-x64.msi.zip.sig" \; 2>/dev/null || true
+          find "$BUNDLE_DIR/nsis" -name "*.nsis.zip" -exec cp {} "artifacts/cadente-${VERSION}-windows-x64.nsis.zip" \; 2>/dev/null || true
+          find "$BUNDLE_DIR/nsis" -name "*.nsis.zip.sig" -exec cp {} "artifacts/cadente-${VERSION}-windows-x64.nsis.zip.sig" \; 2>/dev/null || true
 
           echo "📦 Artifacts collected:"
           ls -la artifacts/
@@ -508,16 +508,16 @@ jobs:
             fi
           }
 
-          DARWIN_AARCH64_SIG=$(read_sig "catarina-claude-${VERSION}-macos-arm64.app.tar.gz.sig")
-          DARWIN_X86_64_SIG=$(read_sig "catarina-claude-${VERSION}-macos-x64.app.tar.gz.sig")
-          LINUX_X86_64_SIG=$(read_sig "catarina-claude-${VERSION}-linux-x64.AppImage.tar.gz.sig")
+          DARWIN_AARCH64_SIG=$(read_sig "cadente-${VERSION}-macos-arm64.app.tar.gz.sig")
+          DARWIN_X86_64_SIG=$(read_sig "cadente-${VERSION}-macos-x64.app.tar.gz.sig")
+          LINUX_X86_64_SIG=$(read_sig "cadente-${VERSION}-linux-x64.AppImage.tar.gz.sig")
 
           # Windows: try NSIS first (default Tauri target), then MSI
-          WINDOWS_SIG=$(read_sig "catarina-claude-${VERSION}-windows-x64.nsis.zip.sig")
-          WIN_UPDATER_FILE="catarina-claude-${VERSION}-windows-x64.nsis.zip"
+          WINDOWS_SIG=$(read_sig "cadente-${VERSION}-windows-x64.nsis.zip.sig")
+          WIN_UPDATER_FILE="cadente-${VERSION}-windows-x64.nsis.zip"
           if [ -z "$WINDOWS_SIG" ]; then
-            WINDOWS_SIG=$(read_sig "catarina-claude-${VERSION}-windows-x64.msi.zip.sig")
-            WIN_UPDATER_FILE="catarina-claude-${VERSION}-windows-x64.msi.zip"
+            WINDOWS_SIG=$(read_sig "cadente-${VERSION}-windows-x64.msi.zip.sig")
+            WIN_UPDATER_FILE="cadente-${VERSION}-windows-x64.msi.zip"
           fi
 
           # Validate ALL signatures exist — never publish without them
@@ -538,20 +538,20 @@ jobs:
           cat > update.json <<EOF
           {
             "version": "${VERSION}",
-            "notes": "Catarina Claude v${VERSION}",
+            "notes": "Cadente v${VERSION}",
             "pub_date": "${PUB_DATE}",
             "platforms": {
               "darwin-aarch64": {
                 "signature": "${DARWIN_AARCH64_SIG}",
-                "url": "${BASE_URL}/catarina-claude-${VERSION}-macos-arm64.app.tar.gz"
+                "url": "${BASE_URL}/cadente-${VERSION}-macos-arm64.app.tar.gz"
               },
               "darwin-x86_64": {
                 "signature": "${DARWIN_X86_64_SIG}",
-                "url": "${BASE_URL}/catarina-claude-${VERSION}-macos-x64.app.tar.gz"
+                "url": "${BASE_URL}/cadente-${VERSION}-macos-x64.app.tar.gz"
               },
               "linux-x86_64": {
                 "signature": "${LINUX_X86_64_SIG}",
-                "url": "${BASE_URL}/catarina-claude-${VERSION}-linux-x64.AppImage.tar.gz"
+                "url": "${BASE_URL}/cadente-${VERSION}-linux-x64.AppImage.tar.gz"
               },
               "windows-x86_64": {
                 "signature": "${WINDOWS_SIG}",
@@ -580,16 +580,16 @@ jobs:
 
           gh release create "$TAG" \
             --repo cadente-hub/cadente-hub.github.io \
-            --title "Catarina Claude v${VERSION}" \
-            --notes "## Catarina Claude v${VERSION}
+            --title "Cadente v${VERSION}" \
+            --notes "## Cadente v${VERSION}
 
           Built from commit: ${SHA:0:8}
 
           ### Downloads
-          - **macOS Apple Silicon**: \`catarina-claude-${VERSION}-macos-arm64.dmg\`
-          - **macOS Intel**: \`catarina-claude-${VERSION}-macos-x64.dmg\`
-          - **Linux**: \`catarina-claude-${VERSION}-linux-x64.AppImage\` or \`.deb\`
-          - **Windows**: \`catarina-claude-${VERSION}-windows-x64.exe\` or \`.msi\`
+          - **macOS Apple Silicon**: \`cadente-${VERSION}-macos-arm64.dmg\`
+          - **macOS Intel**: \`cadente-${VERSION}-macos-x64.dmg\`
+          - **Linux**: \`cadente-${VERSION}-linux-x64.AppImage\` or \`.deb\`
+          - **Windows**: \`cadente-${VERSION}-windows-x64.exe\` or \`.msi\`
 
           ---
           *Built via Secure Public Builder*" \
@@ -623,11 +623,11 @@ jobs:
             exit 0
           fi
 
-          git clone --depth=1 https://x-access-token:${GH_TOKEN}@github.com/catarina-claude/homebrew-apps.git homebrew-repo
+          git clone --depth=1 https://x-access-token:${GH_TOKEN}@github.com/cadente-hub/homebrew-apps.git homebrew-repo
           cd homebrew-repo
 
-          ARM64_DMG="../all-artifacts/catarina-claude-${VERSION}-macos-arm64.dmg"
-          X64_DMG="../all-artifacts/catarina-claude-${VERSION}-macos-x64.dmg"
+          ARM64_DMG="../all-artifacts/cadente-${VERSION}-macos-arm64.dmg"
+          X64_DMG="../all-artifacts/cadente-${VERSION}-macos-x64.dmg"
 
           ARM64_SHA=""
           X64_SHA=""
@@ -635,18 +635,18 @@ jobs:
           if [ -f "$X64_DMG" ]; then X64_SHA=$(shasum -a 256 "$X64_DMG" | awk '{print $1}'); fi
 
           {
-            echo 'cask "catarina-claude" do'
+            echo 'cask "cadente" do'
             echo "  version \"${VERSION}\""
             echo ''
             echo '  if Hardware::CPU.arm?'
-            echo "    url \"https://github.com/cadente-hub/cadente-hub.github.io/releases/download/v#{version}/catarina-claude-#{version}-macos-arm64.dmg\""
+            echo "    url \"https://github.com/cadente-hub/cadente-hub.github.io/releases/download/v#{version}/cadente-#{version}-macos-arm64.dmg\""
             echo "    sha256 \"${ARM64_SHA:-:no_check}\""
             echo '  else'
-            echo "    url \"https://github.com/cadente-hub/cadente-hub.github.io/releases/download/v#{version}/catarina-claude-#{version}-macos-x64.dmg\""
+            echo "    url \"https://github.com/cadente-hub/cadente-hub.github.io/releases/download/v#{version}/cadente-#{version}-macos-x64.dmg\""
             echo "    sha256 \"${X64_SHA:-:no_check}\""
             echo '  end'
             echo ''
-            echo '  name "Catarina Claude"'
+            echo '  name "Cadente"'
             echo '  desc "AI-powered desktop assistant — chat, terminal, Git, API testing, and more"'
             echo '  homepage "https://cadente-hub.github.io"'
             echo ''
@@ -658,22 +658,22 @@ jobs:
             echo '  auto_updates true'
             echo '  depends_on macos: ">= :catalina"'
             echo ''
-            echo '  app "Catarina Claude.app"'
+            echo '  app "Cadente.app"'
             echo ''
             echo '  zap trash: ['
-            echo '    "~/Library/Application Support/com.catarina-claude.app",'
-            echo '    "~/Library/Caches/com.catarina-claude.app",'
-            echo '    "~/Library/Preferences/com.catarina-claude.app.plist",'
-            echo '    "~/Library/Saved Application State/com.catarina-claude.app.savedState",'
+            echo '    "~/Library/Application Support/com.cadente.app",'
+            echo '    "~/Library/Caches/com.cadente.app",'
+            echo '    "~/Library/Preferences/com.cadente.app.plist",'
+            echo '    "~/Library/Saved Application State/com.cadente.app.savedState",'
             echo '  ]'
             echo 'end'
-          } > Casks/catarina-claude.rb
+          } > Casks/cadente.rb
 
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add Casks/catarina-claude.rb
+          git add Casks/cadente.rb
           git diff --cached --quiet && echo "No cask changes" && exit 0
-          git commit -m "chore: bump catarina-claude to v${VERSION}"
+          git commit -m "chore: bump cadente to v${VERSION}"
           git push
 
   # ─────────────────────────────────────────────────────────────
