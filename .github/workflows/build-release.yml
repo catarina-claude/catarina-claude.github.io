@@ -3,7 +3,7 @@ name: Build Release (Secure Public Builder)
 # SECURITY MODEL:
 # This workflow builds binaries from the private repo using public CI minutes.
 # It ONLY runs on repository_dispatch (not on PRs, pushes, or forks).
-# Secrets are gated behind the "build-gate" environment (manual approval required).
+# Secrets are stored in repository secrets.
 # The dispatch payload includes an HMAC signature to prevent unauthorized triggers.
 
 on:
@@ -111,12 +111,11 @@ jobs:
           echo "sha=$SHA" >> $GITHUB_OUTPUT
 
   # ─────────────────────────────────────────────────────────────
-  # Step 2: Build on each platform (gated by build-gate environment)
+  # Step 2: Build on each platform
   # ─────────────────────────────────────────────────────────────
   build-macos:
     needs: validate
     runs-on: macos-latest
-    environment: build-gate
     steps:
       - name: Clone private repo at specific SHA
         env:
@@ -257,7 +256,6 @@ jobs:
   build-linux:
     needs: validate
     runs-on: ubuntu-22.04
-    environment: build-gate
     steps:
       - name: Clone private repo at specific SHA
         env:
@@ -380,7 +378,6 @@ jobs:
   build-windows:
     needs: validate
     runs-on: windows-latest
-    environment: build-gate
     steps:
       - name: Clone private repo at specific SHA
         shell: bash
@@ -494,7 +491,6 @@ jobs:
   release:
     needs: [validate, build-macos, build-linux, build-windows]
     runs-on: ubuntu-latest
-    environment: build-gate
     permissions:
       contents: write
       actions: read
@@ -714,7 +710,6 @@ jobs:
     needs: [validate, build-macos, build-linux, build-windows]
     if: failure()
     runs-on: ubuntu-latest
-    environment: build-gate
     strategy:
       matrix:
         include:
