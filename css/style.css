@@ -1270,6 +1270,61 @@ code {
   white-space: nowrap;
 }
 
+/* Make whole card header act as a "swap to hero" button */
+.download-alt-card__swap {
+  appearance: none;
+  background: transparent;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  color: inherit;
+  font: inherit;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  transition: opacity var(--transition-fast);
+}
+
+.download-alt-card__swap:hover {
+  opacity: 0.92;
+}
+
+.download-alt-card__swap:focus-visible {
+  outline: 2px solid var(--color-accent, #b08050);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* Override block rendering for spans inside the swap button */
+.download-alt-card__swap .download-alt-card__title,
+.download-alt-card__swap .download-alt-card__arch {
+  display: block;
+}
+
+.download-alt-card__hint {
+  font-size: 0.75rem;
+  color: var(--color-text-tertiary);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  margin-top: 4px;
+  opacity: 0.85;
+  transition: opacity var(--transition-fast), color var(--transition-fast);
+}
+
+.download-alt-card__swap:hover .download-alt-card__hint {
+  opacity: 1;
+  color: var(--color-text-secondary);
+}
+
+.download-alt-card__actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+
 /* Outline button variant */
 .btn--outline {
   background: transparent;

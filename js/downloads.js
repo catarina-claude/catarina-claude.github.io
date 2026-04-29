@@ -18,6 +18,7 @@ const PLATFORM_PATTERNS = {
   'macos-x64': { match: (name) => /macos.*x64.*\.dmg$/i.test(name) || /x86_64.*\.dmg$/i.test(name) || (/\.dmg$/i.test(name) && !/arm64|aarch64/i.test(name)) },
   'linux-appimage': { match: (name) => /linux.*x64.*\.AppImage$/i.test(name) || /\.AppImage$/i.test(name) },
   'linux-deb': { match: (name) => /linux.*x64.*\.deb$/i.test(name) || /\.deb$/i.test(name) },
+  'linux-rpm': { match: (name) => /linux.*x64.*\.rpm$/i.test(name) || /\.rpm$/i.test(name) },
   'windows-exe': { match: (name) => /windows.*x64.*\.exe$/i.test(name) || (/\.exe$/i.test(name) && !/\.msi/i.test(name)) },
   'windows-msi': { match: (name) => /windows.*x64.*\.msi$/i.test(name) || /\.msi$/i.test(name) },
 };
@@ -29,25 +30,35 @@ const SVG_ICONS = {
   windows: `<svg viewBox="0 0 24 24" fill="currentColor" class="platform-icon"><path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.4H10.949M0 12.6h9.75v9.451L0 20.699M10.949 12.6H24V24l-12.9-1.801"/></svg>`,
 };
 
-// CLI install commands per platform
-// macOS: installs Homebrew if missing, then installs the app
+// CLI install commands per platform.
+// Linux/Windows commands are templated and rewritten with the actual asset URL
+// once GitHub Releases data is fetched (see updateDynamicCLICommands).
 const BREW_INSTALL = 'command -v brew >/dev/null || /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"';
 const BREW_CASK = 'brew tap cadente-hub/apps && brew install --cask cadente';
-const CLI_COMMANDS = {
+// Templates use <URL> placeholder; resolved with real asset URLs after fetch.
+const CLI_COMMAND_TEMPLATES = {
   'macos-arm64': `${BREW_INSTALL} && ${BREW_CASK}`,
   'macos-x64': `${BREW_INSTALL} && ${BREW_CASK}`,
-  'linux-appimage': 'curl -fsSL https://github.com/cadente-hub/cadente-hub.github.io/releases/latest/download/cadente-linux-x64.AppImage -o cadente.AppImage && chmod +x cadente.AppImage',
-  'linux-deb': 'curl -fsSL https://github.com/cadente-hub/cadente-hub.github.io/releases/latest/download/cadente-linux-x64.deb -o cadente.deb && sudo dpkg -i cadente.deb',
-  'windows-exe': 'winget install cadente',
-  'windows-msi': 'winget install cadente --installer-type msi',
+  // AppImage prefixes `apt install libfuse2` because Ubuntu 22.04+ ships without FUSE 2.
+  'linux-appimage': 'sudo apt install -y libfuse2 && curl -fsSL <URL> -o cadente.AppImage && chmod +x cadente.AppImage && ./cadente.AppImage',
+  'linux-deb': 'curl -fsSL <URL> -o cadente.deb && sudo apt install -y ./cadente.deb',
+  'linux-rpm': 'curl -fsSL <URL> -o cadente.rpm && sudo dnf install -y ./cadente.rpm',
+  // Windows: PowerShell one-liner downloads installer to TEMP and runs it.
+  'windows-exe': 'powershell -Command "iwr <URL> -OutFile $env:TEMP\\cadente-setup.exe; & $env:TEMP\\cadente-setup.exe"',
+  'windows-msi': 'powershell -Command "iwr <URL> -OutFile $env:TEMP\\cadente.msi; Start-Process msiexec.exe -ArgumentList \'/i\',\\\"$env:TEMP\\cadente.msi\\\" -Wait"',
 };
+// Mutable runtime copy — <URL> placeholders get replaced once GitHub Releases data arrives.
+const CLI_COMMANDS = { ...CLI_COMMAND_TEMPLATES };
+// Cached latest release for re-rendering (when user swaps the primary platform).
+let cachedRelease = null;
 
 // Platform display info
 const PLATFORM_INFO = {
   'macos-arm64': { icon: SVG_ICONS.apple, title: 'macOS', arch: 'Apple Silicon', format: '.dmg', btnLabel: 'Download for macOS (Apple Silicon)' },
   'macos-x64': { icon: SVG_ICONS.apple, title: 'macOS', arch: 'Intel (x86_64)', format: '.dmg', btnLabel: 'Download for macOS (Intel)' },
-  'linux-appimage': { icon: SVG_ICONS.linux, title: 'Linux', arch: 'x86_64 (AppImage)', format: '.AppImage', btnLabel: 'Download AppImage' },
-  'linux-deb': { icon: SVG_ICONS.linux, title: 'Linux', arch: 'x86_64 (Debian/Ubuntu)', format: '.deb', btnLabel: 'Download .deb Package' },
+  'linux-deb': { icon: SVG_ICONS.linux, title: 'Linux', arch: 'Debian / Ubuntu / Mint', format: '.deb', btnLabel: 'Download .deb Package' },
+  'linux-rpm': { icon: SVG_ICONS.linux, title: 'Linux', arch: 'Fedora / RHEL / openSUSE', format: '.rpm', btnLabel: 'Download .rpm Package' },
+  'linux-appimage': { icon: SVG_ICONS.linux, title: 'Linux', arch: 'AppImage (any distro)', format: '.AppImage', btnLabel: 'Download AppImage' },
   'windows-exe': { icon: SVG_ICONS.windows, title: 'Windows', arch: 'x86_64 (Installer)', format: '.exe', btnLabel: 'Download .exe Installer' },
   'windows-msi': { icon: SVG_ICONS.windows, title: 'Windows', arch: 'x86_64 (MSI)', format: '.msi', btnLabel: 'Download .msi Package' },
 };
@@ -55,7 +66,7 @@ const PLATFORM_INFO = {
 // Group platforms by OS family
 const OS_FAMILIES = {
   macos: ['macos-arm64', 'macos-x64'],
-  linux: ['linux-appimage', 'linux-deb'],
+  linux: ['linux-deb', 'linux-rpm', 'linux-appimage'],
   windows: ['windows-exe', 'windows-msi'],
 };
 
@@ -69,7 +80,7 @@ function detectOS() {
   }
 
   if (/Linux/i.test(platform) || /Linux/i.test(ua)) {
-    return 'linux-appimage';
+    return detectLinuxFamily(ua);
   }
 
   if (/Win/i.test(platform) || /Windows/i.test(ua)) {
@@ -77,6 +88,15 @@ function detectOS() {
   }
 
   return null;
+}
+
+function detectLinuxFamily(ua) {
+  // Firefox embeds the distro in the UA (e.g. "X11; Ubuntu; Linux x86_64").
+  // Chrome strips it. Default unknown desktop Linux to .deb because that's the
+  // largest user base (Ubuntu/Debian/Mint/Pop/Elementary), with AppImage as a fallback.
+  if (/Fedora|RHEL|CentOS|SUSE|openSUSE|Mageia/i.test(ua)) return 'linux-rpm';
+  if (/Arch|Manjaro|Gentoo|Slackware/i.test(ua)) return 'linux-appimage';
+  return 'linux-deb';
 }
 
 function detectMacArch() {
@@ -255,7 +275,7 @@ function buildGatekeeperModal() {
                 </button>
               </div>
               <div class="cli-snippet__body">
-                <code class="cli-snippet__code" id="modal-xattr-cmd">$ xattr -cr /Applications/Cadente.app</code>
+                <code class="cli-snippet__code" id="modal-xattr-cmd">$ xattr -cr /Applications/Cadente.app && codesign --force --deep --sign - /Applications/Cadente.app</code>
               </div>
             </div>
             <div class="modal__step-note">
@@ -306,7 +326,7 @@ function openGatekeeperModal(downloadUrl) {
   if (copyBtn && !copyBtn.dataset.bound) {
     copyBtn.dataset.bound = 'true';
     copyBtn.addEventListener('click', async () => {
-      const cmd = 'xattr -cr /Applications/Cadente.app';
+      const cmd = 'xattr -cr /Applications/Cadente.app && codesign --force --deep --sign - /Applications/Cadente.app';
       try {
         await navigator.clipboard.writeText(cmd);
       } catch {
@@ -426,21 +446,26 @@ function buildDownloadsLayout(detectedOS) {
           : `<a class="btn btn--sm btn--outline download-alt-card__btn" data-download="${platformKey}" href="${RELEASES_URL}" target="_blank" rel="noopener noreferrer"><span class="btn__icon">↓</span>Download</a>`;
         return `
       <div class="download-alt-card animate-on-scroll" data-platform="${platformKey}">
-        <div class="download-alt-card__top">
-          <div class="download-alt-card__left">
-            <span class="download-alt-card__icon">${info.icon}</span>
-            <div>
-              <h3 class="download-alt-card__title">${info.title}</h3>
-              <p class="download-alt-card__arch">${info.arch}</p>
-            </div>
-          </div>
-          <div class="download-alt-card__right">
-            <div class="download-alt-card__meta">
-              <span class="download-card__format">${info.format}</span>
-              <span class="download-card__size" data-size="${platformKey}">--</span>
-            </div>
-            ${downloadBtn}
-          </div>
+        <button class="download-alt-card__swap" data-swap="${platformKey}" type="button" aria-label="View install steps for ${info.title} ${info.arch}">
+          <span class="download-alt-card__top">
+            <span class="download-alt-card__left">
+              <span class="download-alt-card__icon">${info.icon}</span>
+              <span>
+                <span class="download-alt-card__title">${info.title}</span>
+                <span class="download-alt-card__arch">${info.arch}</span>
+              </span>
+            </span>
+            <span class="download-alt-card__right">
+              <span class="download-alt-card__meta">
+                <span class="download-card__format">${info.format}</span>
+                <span class="download-card__size" data-size="${platformKey}">--</span>
+              </span>
+            </span>
+          </span>
+          <span class="download-alt-card__hint">View install steps →</span>
+        </button>
+        <div class="download-alt-card__actions">
+          ${downloadBtn}
         </div>
         ${buildCLISnippet(platformKey)}
       </div>
@@ -473,6 +498,61 @@ function buildDownloadsLayout(detectedOS) {
   // Init Gatekeeper modal
   buildGatekeeperModal();
   initMacDownloadButtons();
+
+  // Init alt-card swap buttons
+  initSwapButtons();
+}
+
+function initSwapButtons() {
+  document.querySelectorAll('[data-swap]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const target = btn.dataset.swap;
+      if (target) swapPrimaryPlatform(target);
+    });
+  });
+}
+
+// Apply asset URLs/sizes/CLI snippets to whatever is currently in the DOM.
+// Pure-ish: reads release, mutates DOM + resolved CLI_COMMANDS for each platform.
+function applyAssetData(release) {
+  const assets = release.assets || [];
+
+  for (const [platformKey, config] of Object.entries(PLATFORM_PATTERNS)) {
+    const asset = assets.find((a) => config.match(a.name));
+    const template = CLI_COMMAND_TEMPLATES[platformKey];
+
+    if (asset) {
+      // Update download link
+      document.querySelectorAll(`[data-download="${platformKey}"]`).forEach((btn) => {
+        btn.href = asset.browser_download_url;
+      });
+
+      // Update file size
+      const sizeEl = document.querySelector(`[data-size="${platformKey}"]`);
+      if (sizeEl) sizeEl.textContent = formatBytes(asset.size);
+
+      // Resolve and inject the CLI snippet with the real versioned URL.
+      if (template) {
+        CLI_COMMANDS[platformKey] = template.replace('<URL>', asset.browser_download_url);
+        const codeEl = document.getElementById(`cli-cmd-${platformKey}`);
+        if (codeEl) codeEl.textContent = `$ ${CLI_COMMANDS[platformKey]}`;
+      }
+    }
+  }
+}
+
+// User clicked an alt card — promote it to hero, demote the previous hero.
+// Re-applies cached release data so URLs/sizes don't show stale placeholders.
+function swapPrimaryPlatform(platformKey) {
+  if (!PLATFORM_INFO[platformKey]) return;
+  // Reset resolved commands to templates so placeholders re-render before re-applying URLs.
+  Object.assign(CLI_COMMANDS, CLI_COMMAND_TEMPLATES);
+  buildDownloadsLayout(platformKey);
+  if (cachedRelease) applyAssetData(cachedRelease);
+
+  // Scroll the new hero into view smoothly.
+  const hero = document.querySelector('.download-hero-card');
+  if (hero) hero.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 // ---------- Fetch and Render ----------
@@ -481,10 +561,8 @@ async function fetchLatestRelease() {
   const fallback = document.getElementById('downloads-fallback');
   const osMsg = document.getElementById('os-detect-msg');
 
-  // Detect OS
   const detectedOS = detectOS();
 
-  // Update subtitle
   if (osMsg) {
     if (detectedOS) {
       const info = PLATFORM_INFO[detectedOS];
@@ -494,39 +572,20 @@ async function fetchLatestRelease() {
     }
   }
 
-  // Build the dynamic layout
   buildDownloadsLayout(detectedOS);
 
   try {
     const response = await fetch(API_URL);
-
-    if (!response.ok) {
-      throw new Error(`GitHub API returned ${response.status}`);
-    }
+    if (!response.ok) throw new Error(`GitHub API returned ${response.status}`);
 
     const release = await response.json();
+    cachedRelease = release;
 
-    // Update version badge
     if (versionValue) {
       versionValue.textContent = release.tag_name || release.name || 'Unknown';
     }
 
-    // Map assets to platforms
-    const assets = release.assets || [];
-
-    for (const [platformKey, config] of Object.entries(PLATFORM_PATTERNS)) {
-      const asset = assets.find((a) => config.match(a.name));
-
-      if (asset) {
-        // Update download link
-        const btn = document.querySelector(`[data-download="${platformKey}"]`);
-        if (btn) btn.href = asset.browser_download_url;
-
-        // Update file size
-        const sizeEl = document.querySelector(`[data-size="${platformKey}"]`);
-        if (sizeEl) sizeEl.textContent = formatBytes(asset.size);
-      }
-    }
+    applyAssetData(release);
   } catch (error) {
     console.warn('Failed to fetch latest release:', error.message);
 

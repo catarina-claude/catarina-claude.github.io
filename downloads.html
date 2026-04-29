@@ -111,15 +111,16 @@
             <ol class="install-card__steps">
               <li>Download the <code>.dmg</code> for your chip.</li>
               <li>Open and drag <strong>Cadente</strong> to Applications.</li>
-              <li>Open <strong>Terminal</strong> and run <code>xattr -cr /Applications/Cadente.app</code> to clear the macOS quarantine flag (required on Apple Silicon).</li>
+              <li>Open <strong>Terminal</strong> and run <code>xattr -cr /Applications/Cadente.app &amp;&amp; codesign --force --deep --sign - /Applications/Cadente.app</code> to clear the quarantine flag and re-sign locally (required on Apple Silicon).</li>
               <li>Double-click <strong>Cadente</strong> to launch.</li>
             </ol>
           </div>
           <div class="install-card animate-on-scroll">
             <h3 class="install-card__title"><svg viewBox="0 0 24 24" fill="currentColor" class="install-card__icon"><path d="M12.504 0c-.155 0-.315.008-.48.021-4.226.333-3.105 4.807-3.17 6.298-.076 1.092-.3 1.953-1.05 3.02-.885 1.051-2.127 2.75-2.716 4.521-.278.832-.41 1.684-.287 2.489a.424.424 0 00-.11.135c-.26.268-.45.6-.663.839-.199.199-.485.267-.797.4-.313.136-.658.269-.864.68-.09.189-.136.394-.132.602.01.199.059.389.137.564.259.56.848.59 1.314.596.3.003.548-.02.727-.048.096.131.226.256.418.376.405.254.878.379 1.344.379.543 0 1.074-.165 1.46-.555.155-.148.276-.338.372-.563h1.306c.096.225.217.415.372.563.386.39.917.555 1.46.555.466 0 .939-.125 1.344-.379.192-.12.322-.245.418-.376.179.028.427.051.727.048.466-.006 1.055-.036 1.314-.596.078-.175.127-.365.137-.564.004-.208-.042-.413-.132-.602-.206-.411-.551-.544-.864-.68-.312-.133-.598-.201-.797-.4-.213-.239-.403-.571-.663-.839a.424.424 0 00-.11-.135c.123-.805-.009-1.657-.287-2.489-.589-1.771-1.831-3.47-2.716-4.521-.75-1.067-.974-1.928-1.05-3.02-.065-1.491 1.056-5.965-3.17-6.298A5.042 5.042 0 0012.504 0z"/></svg> Linux</h3>
             <ol class="install-card__steps">
-              <li><strong>AppImage:</strong> Make executable with <code>chmod +x *.AppImage</code>, then run.</li>
-              <li><strong>Debian/Ubuntu:</strong> Install with <code>sudo dpkg -i cadente_*.deb</code>.</li>
+              <li><strong>Debian/Ubuntu/Mint:</strong> <code>sudo apt install ./cadente_*.deb</code> (auto-resolves dependencies).</li>
+              <li><strong>Fedora/RHEL/openSUSE:</strong> <code>sudo dnf install ./cadente-*.rpm</code> (or use AppImage below).</li>
+              <li><strong>AppImage (any distro):</strong> on Ubuntu 22.04+ run <code>sudo apt install libfuse2</code> first, then <code>chmod +x *.AppImage &amp;&amp; ./*.AppImage</code>.</li>
               <li>Launch from your application menu or terminal.</li>
             </ol>
           </div>

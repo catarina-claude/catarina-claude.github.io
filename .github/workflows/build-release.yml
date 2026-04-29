@@ -322,7 +322,7 @@ jobs:
             sudo cp ~/apt-cache/*.deb /var/cache/apt/archives/ 2>/dev/null || true
           fi
           sudo apt-get update -qq
-          sudo apt-get install -y --no-install-recommends libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf lld
+          sudo apt-get install -y --no-install-recommends libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf lld rpm
           mkdir -p ~/apt-cache
           cp /var/cache/apt/archives/*.deb ~/apt-cache/ 2>/dev/null || true
 
@@ -359,6 +359,7 @@ jobs:
 
           find "$BUNDLE_DIR/appimage" -name "*.AppImage" -exec cp {} "artifacts/cadente-${VERSION}-linux-x64.AppImage" \; 2>/dev/null || true
           find "$BUNDLE_DIR/deb" -name "*.deb" -exec cp {} "artifacts/cadente-${VERSION}-linux-x64.deb" \; 2>/dev/null || true
+          find "$BUNDLE_DIR/rpm" -name "*.rpm" -exec cp {} "artifacts/cadente-${VERSION}-linux-x64.rpm" \; 2>/dev/null || true
           find "$BUNDLE_DIR/appimage" -name "*.AppImage.tar.gz" -exec cp {} "artifacts/cadente-${VERSION}-linux-x64.AppImage.tar.gz" \; 2>/dev/null || true
           find "$BUNDLE_DIR/appimage" -name "*.AppImage.tar.gz.sig" -exec cp {} "artifacts/cadente-${VERSION}-linux-x64.AppImage.tar.gz.sig" \; 2>/dev/null || true
 
@@ -689,11 +690,15 @@ jobs:
             echo ''
             echo '  app "Cadente.app"'
             echo ''
-            echo '  # Strip macOS quarantine so the app opens without "is damaged" Gatekeeper error.'
-            echo '  # Required for unsigned apps — works on both Intel and Apple Silicon (incl. M4).'
+            echo '  # Strip macOS quarantine + re-sign ad-hoc locally so the app opens without'
+            echo '  # "is damaged" Gatekeeper error. Required for unsigned apps — robust on both'
+            echo '  # Intel and Apple Silicon (M1–M4) regardless of original signature state.'
             echo '  postflight do'
             echo '    system_command "/usr/bin/xattr",'
             echo '                   args: ["-cr", "#{appdir}/Cadente.app"],'
+            echo '                   sudo: true'
+            echo '    system_command "/usr/bin/codesign",'
+            echo '                   args: ["--force", "--deep", "--sign", "-", "#{appdir}/Cadente.app"],'
             echo '                   sudo: true'
             echo '    system_command "/usr/bin/open",'
             echo '                   args: ["#{appdir}/Cadente.app"],'
